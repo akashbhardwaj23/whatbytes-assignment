@@ -1,9 +1,65 @@
 "use client"
+import { useProducts } from "@/hooks/useProducts";
 import { CategoryItem, filterCategoryItems, Items } from "@/utils/lib";
-import { Dispatch, SetStateAction, useState } from "react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+
+
+const ALL_PRODUCTS = [
+  { id: 1, name: 'Running Shoes', price: 120, category: 'shoes' },
+  { id: 2, name: 'Casual Sneakers', price: 80, category: 'shoes' },
+  { id: 3, name: 'T-Shirt', price: 30, category: 'apparel' },
+  { id: 4, name: 'Jeans', price: 70, category: 'apparel' },
+  { id: 5, name: 'Hat', price: 25, category: 'accessories' },
+  { id: 6, name: 'Socks (3-pack)', price: 15, category: 'accessories' },
+  { id: 7, name: 'Dress Shoes', price: 150, category: 'shoes' },
+  { id: 8, name: 'Winter Coat', price: 200, category: 'apparel' },
+  { id: 9, name: 'Sunglasses', price: 45, category: 'accessories' },
+  { id: 10, name: 'Hiking Boots', price: 180, category: 'shoes' },
+]
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<Items>("all")
+  const [minPrice, setMinPrice] = useState(200);
+  const [maxPrice, setMaxPrice] = useState(5000);
+  const {products, loading} = useProducts();
+
+
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('category') as Items  || 'all');
+    setMinPrice(Number(searchParams.get('minPrice')) || 200);
+    setMaxPrice(Number(searchParams.get('maxPrice')) || 5000);
+  }, [searchParams]);
+
+
+  const filteredProduct = useMemo(() => {
+    let currentProducts = [...products];
+    console.log("current producs", currentProducts)
+
+    if(selectedCategory !== "all"){
+      currentProducts = currentProducts.filter((product) => product.category.toLowerCase() === selectedCategory.toLowerCase())
+    }
+
+    if(minPrice > 200){
+      currentProducts = currentProducts.filter((product) => product.price >= minPrice)
+    }
+    if(maxPrice > 200){
+      currentProducts = currentProducts.filter((product) => product.price <= minPrice)
+    }
+
+    return currentProducts;
+  }, [selectedCategory, minPrice, maxPrice])
+
+  if(loading){
+    return (
+      <div>
+        Loading ....
+      </div>
+    )
+  }
+
   return (
     <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8 min-h-screen">
       <div className="col-span-1 flex flex-col gap-8 ml-20">
@@ -38,11 +94,21 @@ export default function Home() {
         </div>
       </div>
       <div className="col-span-3 px-4">
-        <h1 className="text-4xl font-bold">Product Listing</h1>
+        <h1 className="text-4xl font-bold mb-4">Product Listing</h1>
+        {filteredProduct.length === 0 && (
+                <p className="text-neutral-800 text-center py-8">No Product Found</p>
+              )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="col-span-1">
-            <h2>Product 1</h2>
-          </div>
+              {filteredProduct.map((product, index) => (
+                 <div key={product.id} className="p-4 cursor-pointer">
+                  <Image src={product.image} height={600} width={600} alt={product.title} className="w-30 h-40 object-contain mb-2" />
+                  <h3 className="text-base font-semibold mb-1 max-w-60">{product.title}</h3>
+                  <p className="text-base font-bold mt-2">
+                    ${product.price.toFixed(2)}
+                  </p>
+                  <button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background">Add to Cart</button>
+               </div>
+              ))}
         </div>
       </div>
     </main>
