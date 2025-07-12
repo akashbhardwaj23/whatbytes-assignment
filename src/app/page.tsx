@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<Items>("all")
   return (
-    <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8">
+    <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8 min-h-screen">
       <div className="col-span-1 flex flex-col gap-8 ml-20">
         <div className="bg-primary p-4 max-w-4xl w-60 rounded-[10px] text-background shadow-lg">
           <h2 className="text-xl font-semibold">Filters</h2>
