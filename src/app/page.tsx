@@ -2,7 +2,7 @@
 import { useProducts } from "@/hooks/useProducts";
 import { CategoryItem, filterCategoryItems, Items } from "@/utils/lib";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 
@@ -27,6 +27,8 @@ export default function Home() {
   const {products, loading} = useProducts();
 
 
+  const router = useRouter()
+
   useEffect(() => {
     setSelectedCategory(searchParams.get('category') as Items  || 'all');
     setMinPrice(Number(searchParams.get('minPrice')) || 200);
@@ -38,8 +40,13 @@ export default function Home() {
     let currentProducts = [...products];
     console.log("current producs", currentProducts)
 
+    console.log("selectedCategory ", selectedCategory)
+
     if(selectedCategory !== "all"){
+      // console.log("products ", currentProducts[0].category)
       currentProducts = currentProducts.filter((product) => product.category.toLowerCase() === selectedCategory.toLowerCase())
+     
+      console.log("selectedCategory Products ", currentProducts)
     }
 
     if(minPrice > 200){
@@ -50,7 +57,12 @@ export default function Home() {
     }
 
     return currentProducts;
-  }, [selectedCategory, minPrice, maxPrice])
+  }, [selectedCategory, minPrice, maxPrice, products])
+
+
+  const handleProductClick = (id : number) => {
+      router.push(`/product/${id}`)
+  }
 
   if(loading){
     return (
@@ -100,10 +112,10 @@ export default function Home() {
               )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredProduct.map((product, index) => (
-                 <div key={product.id} className="p-4 cursor-pointer">
+                 <div key={product.id} className="p-4 cursor-pointer" onClick={() => handleProductClick(product.id)}>
                   <Image src={product.image} height={600} width={600} alt={product.title} className="w-30 h-40 object-contain mb-2" />
-                  <h3 className="text-base font-semibold mb-1 max-w-60">{product.title}</h3>
-                  <p className="text-base font-bold mt-2">
+                  <h3 className="text-base font-semibold mb-1 h-12 max-w-60 overflow-hidden">{product.title}</h3>
+                  <p className="text-base font-bold mt-2 mb-2">
                     ${product.price.toFixed(2)}
                   </p>
                   <button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background">Add to Cart</button>

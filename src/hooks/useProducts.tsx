@@ -11,8 +11,10 @@ export function useProducts(){
 
     console.log("products ", products)
     const fetchData = async() => {
+        setLoading(true)
         const response = await fetch('https://fakestoreapi.com/products');
         const data = await response.json();
+        setLoading(false)
         setProducts(data);
     }
 
