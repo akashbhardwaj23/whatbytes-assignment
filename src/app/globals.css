@@ -7,6 +7,7 @@
   --primary-text : #f4f4f5;
   --secondary-background : #002C61;
   --secondary-text : #ffffff;
+  --star-color : #385982;
 }
 
 
@@ -17,6 +18,7 @@
   --color-primary-text: var(--primary-text);
   --color-secondary-background: var(--secondary-background);
   --color-secondary-text: var(--secondary-text);
+  --color-star : var(--star-color);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

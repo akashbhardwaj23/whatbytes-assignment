@@ -10,7 +10,7 @@ export function Footer(){
                     <h2 className="text-xl">Filters</h2>
                    <div className="h-30 flex flex-col justify-between font-light">
                    <p>All</p>
-                   <p>2024 American</p>
+                   <p>{new Date().getFullYear()} Indian</p>
                    </div>
                 </div>
                 <div className="flex flex-col gap-4 mx-auto">
