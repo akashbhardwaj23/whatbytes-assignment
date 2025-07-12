@@ -14,10 +14,10 @@ export const filterCategoryItems : CategoryItem[] = [
     }
 ]
 
-export type Items = "all" | "electronics" | "clothing" | "home"
+export type FilterItemsType = "all" | "electronics" | "clothing" | "home"
 
 export type CategoryItem = {
-    value : Items,
+    value : FilterItemsType,
     label : string
 }
 

@@ -1,6 +1,6 @@
 "use client"
 import { useProducts } from "@/hooks/useProducts";
-import { CategoryItem, filterCategoryItems, Items } from "@/utils/lib";
+import { CategoryItem, filterCategoryItems, FilterItemsType } from "@/utils/lib";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -21,7 +21,7 @@ const ALL_PRODUCTS = [
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const [selectedCategory, setSelectedCategory] = useState<Items>("all")
+  const [selectedCategory, setSelectedCategory] = useState<FilterItemsType>("all")
   const [minPrice, setMinPrice] = useState(200);
   const [maxPrice, setMaxPrice] = useState(5000);
   const {products, loading} = useProducts();
@@ -30,7 +30,7 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    setSelectedCategory(searchParams.get('category') as Items  || 'all');
+    setSelectedCategory(searchParams.get('category') as FilterItemsType  || 'all');
     setMinPrice(Number(searchParams.get('minPrice')) || 200);
     setMaxPrice(Number(searchParams.get('maxPrice')) || 5000);
   }, [searchParams]);
@@ -64,6 +64,27 @@ export default function Home() {
       router.push(`/product/${id}`)
   }
 
+  const handleFilterChange = (filterType : 'category' | 'minPrice' | 'maxPrice', value : string) => {
+    const currentParams = new URLSearchParams(searchParams.toString());
+
+    if(value){
+      currentParams.set(filterType, value)
+    } else {
+      currentParams.delete(filterType)
+    }
+
+    router.push(`/?${currentParams.toString()}`)
+
+    if(filterType === "category"){
+      const newValue = value as FilterItemsType;
+      setSelectedCategory(newValue)
+    } else if(filterType === "minPrice"){
+      setMinPrice(Number(value));
+    } else if (filterType === "maxPrice"){
+      setMaxPrice(Number(value))
+    }
+  }
+
   if(loading){
     return (
       <div>
@@ -82,7 +103,7 @@ export default function Home() {
             <h4 className="font-medium">Categories</h4>
             <div className="space-y-3"></div>
             {filterCategoryItems.map((category, index) => (
-              <RadioOptionComponent key={index} category={category} className="bg-primary" isCategoryCard ={true} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+              <RadioOptionComponent key={index} category={category} className="bg-primary" isCategoryCard ={true} selectedCategory={selectedCategory} handleFilterChange={handleFilterChange} />
             ))}
           </div>
           <div className="mt-4 flex flex-col gap-2">
@@ -95,7 +116,7 @@ export default function Home() {
           <div className="flex flex-col gap-2">
             <h2 className="text-base font-semibold">Category</h2>
             {filterCategoryItems.map((category, index) => (
-              <RadioOptionComponent category={category} key={index} selectedCategory={selectedCategory} isCategoryCard={false} className="bg-background" setSelectedCategory={setSelectedCategory} />
+              <RadioOptionComponent category={category} key={index} selectedCategory={selectedCategory} isCategoryCard={false} className="bg-background" handleFilterChange={handleFilterChange} />
   
             ))}
           </div>
@@ -133,13 +154,13 @@ function RadioOptionComponent({
   className,
   isCategoryCard,
   selectedCategory,
-  setSelectedCategory
+  handleFilterChange
 }: {
   category: CategoryItem;
   className : string;
   isCategoryCard : boolean
-  selectedCategory : Items;
-  setSelectedCategory : Dispatch<SetStateAction<Items>>
+  selectedCategory : FilterItemsType
+  handleFilterChange : (filterType : 'category' | 'minPrice' | 'maxPrice', value : string) => void
 }) {
   return (
     <div key={category.value} className="flex items-center">
@@ -150,7 +171,7 @@ function RadioOptionComponent({
                 name="category"
                 value={category.value}
                 checked={selectedCategory === category.value}
-                onChange={(e) => setSelectedCategory(e.target.value as Items)}
+                onChange={(e) => handleFilterChange("category", e.target.value)}
                 className="sr-only"
               />
               <label htmlFor={category.value} className="flex items-center cursor-pointer">
