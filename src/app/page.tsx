@@ -1,30 +1,22 @@
 "use client"
+import { useProductContext } from "@/context/product";
 import { useProducts } from "@/hooks/useProducts";
-import { CategoryItem, filterCategoryItems, FilterItemsType } from "@/utils/lib";
+import { CartItem, CategoryItem, filterCategoryItems, FilterItemsType, ProductType } from "@/utils/lib";
+import { ShoppingCart } from "lucide-react";
+import { Span } from "next/dist/trace";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 
-const ALL_PRODUCTS = [
-  { id: 1, name: 'Running Shoes', price: 120, category: 'shoes' },
-  { id: 2, name: 'Casual Sneakers', price: 80, category: 'shoes' },
-  { id: 3, name: 'T-Shirt', price: 30, category: 'apparel' },
-  { id: 4, name: 'Jeans', price: 70, category: 'apparel' },
-  { id: 5, name: 'Hat', price: 25, category: 'accessories' },
-  { id: 6, name: 'Socks (3-pack)', price: 15, category: 'accessories' },
-  { id: 7, name: 'Dress Shoes', price: 150, category: 'shoes' },
-  { id: 8, name: 'Winter Coat', price: 200, category: 'apparel' },
-  { id: 9, name: 'Sunglasses', price: 45, category: 'accessories' },
-  { id: 10, name: 'Hiking Boots', price: 180, category: 'shoes' },
-]
-
 export default function Home() {
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<FilterItemsType>("all")
+  const {products, loading, searchTerm, cart, setCart, setProducts} = useProductContext()
+  const [mysearchTerm, setMySearchTerm] = useState('')
   const [minPrice, setMinPrice] = useState(200);
   const [maxPrice, setMaxPrice] = useState(5000);
-  const {products, loading} = useProducts();
+  // const {products, loading} = useProducts();
 
 
   const router = useRouter()
@@ -35,12 +27,21 @@ export default function Home() {
     setMaxPrice(Number(searchParams.get('maxPrice')) || 5000);
   }, [searchParams]);
 
+  console.log("search term is ", searchTerm)
+
 
   const filteredProduct = useMemo(() => {
     let currentProducts = [...products];
     console.log("current producs", currentProducts)
 
     console.log("selectedCategory ", selectedCategory)
+
+    if (searchTerm) {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      currentProducts = currentProducts.filter((product) =>
+        product.title.toLowerCase().includes(lowerCaseSearchTerm),
+      );
+    }
 
     if(selectedCategory !== "all"){
       // console.log("products ", currentProducts[0].category)
@@ -57,11 +58,24 @@ export default function Home() {
     }
 
     return currentProducts;
-  }, [selectedCategory, minPrice, maxPrice, products])
+  }, [selectedCategory, minPrice, maxPrice, products, searchTerm])
 
 
   const handleProductClick = (id : number) => {
       router.push(`/product/${id}`)
+  }
+
+  const handleAddToCart = (product : ProductType) => {
+    setCart(prev => [...prev, {...product, quantity : 1}])
+    setProducts((prev) => prev.map((item) => item.id === product.id ? {...item , addedToCart : true} : {...item}))
+    const localCart = localStorage.getItem("cart");
+    if(localCart){
+      const parsedCart:CartItem[] = JSON.parse(localCart);
+      parsedCart.push({...product, quantity : 1});
+      localStorage.setItem('cart', JSON.stringify(parsedCart))
+      return
+    }
+    localStorage.setItem('cart', JSON.stringify([{...product, quantity : 1}]))
   }
 
   const handleFilterChange = (filterType : 'category' | 'minPrice' | 'maxPrice', value : string) => {
@@ -133,13 +147,24 @@ export default function Home() {
               )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredProduct.map((product, index) => (
-                 <div key={product.id} className="p-4 cursor-pointer" onClick={() => handleProductClick(product.id)}>
+                 <div key={product.id} className="p-4 cursor-pointer">
+                  <div onClick={() => handleProductClick(product.id)}>
                   <Image src={product.image} height={600} width={600} alt={product.title} className="w-30 h-40 object-contain mb-2" />
                   <h3 className="text-base font-semibold mb-1 h-12 max-w-60 overflow-hidden">{product.title}</h3>
                   <p className="text-base font-bold mt-2 mb-2">
                     ${product.price.toFixed(2)}
                   </p>
-                  <button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background">Add to Cart</button>
+                  </div>
+                  {product.addedToCart ? (<button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background cursor-pointer"  onClick={() => router.push('/cart')}>
+                      <p className="flex items-center gap-2">
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>Go To Cart</span>
+                    </p>
+                  </button>) : (<button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background cursor-pointer" onClick={() => handleAddToCart(product)}>
+                  <span>
+                    Add to Cart
+                  </span>
+              </button>)}
                </div>
               ))}
         </div>

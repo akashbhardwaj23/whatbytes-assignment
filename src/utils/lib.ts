@@ -32,4 +32,19 @@ export type ProductType = {
         count : number
     }
     title : string
+    addedToCart : boolean
 }
+
+
+export interface CartItem {
+    id: number
+    title: string
+    price: number
+    quantity: number
+    image: string
+    rating : {
+        rate : number,
+        count : number
+    }
+    category: string;
+  }
