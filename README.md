@@ -1,76 +1,87 @@
-# whatbytes-assignment
+# Frontend Assignment: Whatbytes E-commerce Store
 
-## Assignment
+This project implements a basic e-commerce store with a product listing page and a product detail page, focusing on responsive design.
 
-### 1. Home Page (/) – Product Listing
+## Table of Contents
 
-### Layout:
-#### Header:
+-   [Features](#features)
+-   [Pages & Layout](#pages--layout)
+    -   [1. Home Page (/) - Product Listing](#1-home-page---product-listing)
+    -   [2. Product Detail Page (/product/[id])](#2-product-detail-page-productid)
+-   [Technology Stack](#technology-stack)
+-   [Setup & Installation](#setup--installation)
+-   [Running the Application](#running-the-application)
+-   [Project Structure](#project-structure)
+-   [Styling & Responsiveness](#styling--responsiveness)
+-   [Future Enhancements](#future-enhancements)
+-   [License](#license)
 
-[x] Logo on the left
+## Features
 
-[x] Search bar in the center
+-   **Product Browsing**: Users can view a list of available products.
+-   **Product Filtering**: Filter products by category and price.
+-   **Product Details**: View detailed information for individual products.
+-   **Add to Cart**: Functionality to add products to a cart (basic implementation).
+-   **Responsive Design**: Optimized for seamless viewing across various devices (mobile, tablet, desktop).
 
-[/] Cart icon (with badge) and profile/avatar on the right
+## Pages & Layout
+
+### 1. Home Page (/) - Product Listing
+
+The main landing page displaying all products with filtering options.
+
+**Layout Breakdown:**
+
+*   **Header:**
+    *   **Left:** Logo.
+    *   **Center:** Search bar for product lookup.
+    *   **Right:** Cart icon (with a potential badge for item count) and placeholder for a user profile/avatar.
+*   **Main Section:**
+    *   **Sidebar (Left):**
+        *   Category filter (implemented using radio buttons/pills).
+        *   Price range slider.
+*   **Footer:**
+    *   Copyright information.
+    *   Social media icons (Facebook, Twitter, Instagram).
+
+### 2. Product Detail Page (/product/[id])
+
+Dedicated page for a single product with comprehensive information.
+
+**Layout Breakdown:**
+
+*   **Image Section (Left):**
+    *   Displays the product's main image or an image carousel (if multiple images are available).
+*   **Details Section (Right):**
+    *   Product Title.
+    *   Product Price.
+    *   Detailed Product Description.
+    *   Product Category.
+    *   Quantity Selector.
+    *   "Add to Cart" button.
+
+## Technology Stack
+
+*   **Framework:** Next.js (React)
+*   **Styling:** Tailwind CSS
+*   **Icons:** Lucide React
+
+## Setup & Installation
+
+*  **Clone The Project**
+```git
+git clone https://github.com/akashbhardwaj23/whatbytes-assignment
+```
+
+*  **Install Dependencies**
+```js
+npm install
+```
+
+*  **Start The Project**
+```
+npm run dev
+```
 
 
-### Main Section:
-#### Sidebar (left):
-
-[X] Category filter (checkboxes or pills)
-
-[X] Price range slider
-
-[X] Brand filter (optional)
-
-
-### Product Grid (right):
-[X] Responsive grid: 3 columns on desktop, 2 on tablet, 1 on mobile
-
-[X] Each product card includes:
-    
-- [X] Image (cover)
-- [X] Title
-- [X] Price
-- [X] Quick "Add to Cart" button
-- [X] Optional: Rating stars
-
-
-### Footer:
-[X] Copyright information
-
-[X] Social media icons
-
-
-
-## 2. Product Detail Page (/product/[id])
-### Layout:
-#### Image Section (left):
-[X] Image carousel or large product image
-
-
-#### Details Section (right):
-[X] Product title
-
-[X] Price
-
-[X] Description
-
-[X] Category
-
-[X] Quantity selector
-
-[X] "Add to Cart" button
-
-[ ] Optional: Reviews section
-
-
-
-## 3. Bonus (Optional) – Cart Page (/cart)
-[X] List of added products
-
-[X] Quantity update controls
-
-[X] Remove item option
-
-[X] Price summary
+## Visit the website here - [WhatBytes](https://whatbytes-assignment-one-gamma.vercel.app/)
