@@ -13,7 +13,6 @@ This project implements a basic e-commerce store with a product listing page and
 -   [Running the Application](#running-the-application)
 -   [Project Structure](#project-structure)
 -   [Styling & Responsiveness](#styling--responsiveness)
--   [Future Enhancements](#future-enhancements)
 -   [License](#license)
 
 ## Features
