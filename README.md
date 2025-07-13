@@ -7,70 +7,70 @@
 ### Layout:
 #### Header:
 
-[ ] Logo on the left
+[x] Logo on the left
 
-[ ] Search bar in the center
+[x] Search bar in the center
 
-[ ] Cart icon (with badge) and profile/avatar on the right
+[/] Cart icon (with badge) and profile/avatar on the right
 
 
 ### Main Section:
 #### Sidebar (left):
 
-[ ] Category filter (checkboxes or pills)
+[x] Category filter (checkboxes or pills)
 
 [ ] Price range slider
 
-[ ] Brand filter (optional)
+[X] Brand filter (optional)
 
 
 ### Product Grid (right):
-[ ] Responsive grid: 3 columns on desktop, 2 on tablet, 1 on mobile
+[/] Responsive grid: 3 columns on desktop, 2 on tablet, 1 on mobile
 
-[ ] Each product card includes:
+[X] Each product card includes:
     
-- [ ] Image (cover)
-- [ ] Title
-- [ ] Price
-- [ ] Quick "Add to Cart" button
-- [ ] Optional: Rating stars
+- [X] Image (cover)
+- [X] Title
+- [X] Price
+- [X] Quick "Add to Cart" button
+- [X] Optional: Rating stars
 
 
 ### Footer:
-[ ] Copyright information
+[X] Copyright information
 
-[ ] Social media icons
+[X] Social media icons
 
 
 
 ## 2. Product Detail Page (/product/[id])
 ### Layout:
 #### Image Section (left):
-[ ] Image carousel or large product image
+[X] Image carousel or large product image
 
 
 #### Details Section (right):
-[ ] Product title
+[X] Product title
 
-[ ] Price
+[X] Price
 
-[ ] Description
+[X] Description
 
-[ ] Category
+[X] Category
 
 [ ] Quantity selector
 
-[ ] "Add to Cart" button
+[X] "Add to Cart" button
 
 [ ] Optional: Reviews section
 
 
 
 ## 3. Bonus (Optional) – Cart Page (/cart)
-[ ] List of added products
+[X] List of added products
 
-[ ] Quantity update controls
+[X] Quantity update controls
 
-[ ] Remove item option
+[X] Remove item option
 
-[ ] Price summary
+[X] Price summary
