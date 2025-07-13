@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ProductContextProvider } from "@/context/product";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,9 @@ export default function RootLayout({
       >
       <ProductContextProvider>
         <Navbar />
+         <Suspense>
           {children}
+         </Suspense>
           <Footer />
       </ProductContextProvider>
       </body>
