@@ -76,6 +76,8 @@ export function ProductContextProvider({
         const data:ProductType[] = await response.json();
         // console.log("cart on context is ", cart)
         handleAddToCart(data)
+
+        console.log("data is ", data)
         setLoading(false)
         console.log("data is ", data)
         setProducts(data);
