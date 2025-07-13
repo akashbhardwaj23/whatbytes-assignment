@@ -1,33 +1,29 @@
 "use client"
+import { PriceSelectorComponent } from "@/components/priceselector";
+import { RadioOptionComponent } from "@/components/radiooptioncomponent";
 import { useProductContext } from "@/context/product";
-import { useProducts } from "@/hooks/useProducts";
-import { CartItem, CategoryItem, filterCategoryItems, FilterItemsType, ProductType } from "@/utils/lib";
+import { CartItem, filterCategoryItems, FilterItemsType, ProductType } from "@/utils/lib";
 import { ShoppingCart } from "lucide-react";
-import { Span } from "next/dist/trace";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 
 export default function Home() {
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<FilterItemsType>("all")
-  const {products, loading, searchTerm, cart, setCart, setProducts} = useProductContext()
-  const [mysearchTerm, setMySearchTerm] = useState('')
-  const [minPrice, setMinPrice] = useState(200);
+  const { products, loading, searchTerm, cart, setCart, setProducts, setSelectedProduct } = useProductContext()
+  const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(5000);
-  // const {products, loading} = useProducts();
-
-
   const router = useRouter()
 
   useEffect(() => {
-    setSelectedCategory(searchParams.get('category') as FilterItemsType  || 'all');
-    setMinPrice(Number(searchParams.get('minPrice')) || 200);
-    setMaxPrice(Number(searchParams.get('maxPrice')) || 5000);
+    const localMinPrice = localStorage.getItem("minPrice");
+    const localMaxPrice = localStorage.getItem("maxPrice");
+    setSelectedCategory(searchParams.get('category') as FilterItemsType || 'all');
+    setMinPrice(Number(searchParams.get('minPrice')) || Number(localMinPrice) || 0);
+    setMaxPrice(Number(searchParams.get('maxPrice')) || Number(localMaxPrice) || 5000);
   }, [searchParams]);
-
-  console.log("search term is ", searchTerm)
 
 
   const filteredProduct = useMemo(() => {
@@ -43,45 +39,47 @@ export default function Home() {
       );
     }
 
-    if(selectedCategory !== "all"){
+    if (selectedCategory !== "all") {
       // console.log("products ", currentProducts[0].category)
       currentProducts = currentProducts.filter((product) => product.category.toLowerCase() === selectedCategory.toLowerCase())
-     
+
       console.log("selectedCategory Products ", currentProducts)
     }
 
-    if(minPrice > 200){
+    if (minPrice > 0) {
       currentProducts = currentProducts.filter((product) => product.price >= minPrice)
     }
-    if(maxPrice > 200){
-      currentProducts = currentProducts.filter((product) => product.price <= minPrice)
+    if (maxPrice < 5000) {
+      currentProducts = currentProducts.filter((product) => product.price <= maxPrice)
     }
 
     return currentProducts;
   }, [selectedCategory, minPrice, maxPrice, products, searchTerm])
 
 
-  const handleProductClick = (id : number) => {
-      router.push(`/product/${id}`)
+  const handleProductClick = (product: ProductType) => {
+    setSelectedProduct(product)
+    localStorage.setItem("selectedProduct", JSON.stringify(product))
+    router.push(`/product/${product.id}`)
   }
 
-  const handleAddToCart = (product : ProductType) => {
-    setCart(prev => [...prev, {...product, quantity : 1}])
-    setProducts((prev) => prev.map((item) => item.id === product.id ? {...item , addedToCart : true} : {...item}))
+  const handleAddToCart = (product: ProductType) => {
+    setCart(prev => [...prev, { ...product, quantity: 1 }])
+    setProducts((prev) => prev.map((item) => item.id === product.id ? { ...item, addedToCart: true } : { ...item }))
     const localCart = localStorage.getItem("cart");
-    if(localCart){
-      const parsedCart:CartItem[] = JSON.parse(localCart);
-      parsedCart.push({...product, quantity : 1});
+    if (localCart) {
+      const parsedCart: CartItem[] = JSON.parse(localCart);
+      parsedCart.push({ ...product, quantity: 1 });
       localStorage.setItem('cart', JSON.stringify(parsedCart))
       return
     }
-    localStorage.setItem('cart', JSON.stringify([{...product, quantity : 1}]))
+    localStorage.setItem('cart', JSON.stringify([{ ...product, quantity: 1 }]))
   }
 
-  const handleFilterChange = (filterType : 'category' | 'minPrice' | 'maxPrice', value : string) => {
+  const handleFilterChange = (filterType: 'category' | 'minPrice' | 'maxPrice', value: string) => {
     const currentParams = new URLSearchParams(searchParams.toString());
 
-    if(value){
+    if (value) {
       currentParams.set(filterType, value)
     } else {
       currentParams.delete(filterType)
@@ -89,41 +87,40 @@ export default function Home() {
 
     router.push(`/?${currentParams.toString()}`)
 
-    if(filterType === "category"){
+    if (filterType === "category") {
       const newValue = value as FilterItemsType;
       setSelectedCategory(newValue)
-    } else if(filterType === "minPrice"){
+    } else if (filterType === "minPrice") {
       setMinPrice(Number(value));
-    } else if (filterType === "maxPrice"){
+    } else if (filterType === "maxPrice") {
       setMaxPrice(Number(value))
     }
   }
 
-  if(loading){
+  if (loading) {
     return (
-      <div>
-        Loading ....
+      <div className="min-h-screen bg-neutral-50">
+        <div className="max-w-4xl mx-auto p-6">
+          Loading ....
+        </div>
       </div>
     )
   }
 
   return (
-    <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8 min-h-screen">
-      <div className="col-span-1 flex flex-col gap-8 ml-20">
-        <div className="bg-primary p-4 max-w-4xl w-60 rounded-[10px] text-background shadow-lg">
+    <main className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-8 min-h-screen">
+      <div className="col-span-1 flex flex-col gap-4 md:gap-8 md:ml-20">
+        <div className="bg-primary p-4 rounded-[10px] text-background shadow-lg">
           <h2 className="text-xl font-semibold">Filters</h2>
 
           <div className="mt-4 flex flex-col gap-2">
             <h4 className="font-medium">Categories</h4>
             <div className="space-y-3"></div>
             {filterCategoryItems.map((category, index) => (
-              <RadioOptionComponent key={index} category={category} className="bg-primary" isCategoryCard ={true} selectedCategory={selectedCategory} handleFilterChange={handleFilterChange} />
+              <RadioOptionComponent key={index} category={category} className="bg-primary" isCategoryCard={true} selectedCategory={selectedCategory} handleFilterChange={handleFilterChange} />
             ))}
           </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <h4 className="font-medium">Price</h4>
-            <input type="range" min={0} max={100} />
-          </div>
+            <PriceSelectorComponent minPrice={minPrice} setMinPrice={setMinPrice} maxPrice={maxPrice} setMaxPrice={setMaxPrice} />
         </div>
 
         <div className="px-4 flex flex-col gap-4">
@@ -131,7 +128,7 @@ export default function Home() {
             <h2 className="text-base font-semibold">Category</h2>
             {filterCategoryItems.map((category, index) => (
               <RadioOptionComponent category={category} key={index} selectedCategory={selectedCategory} isCategoryCard={false} className="bg-background" handleFilterChange={handleFilterChange} />
-  
+
             ))}
           </div>
           <div className="flex flex-col justify-center gap-2">
@@ -140,78 +137,35 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="col-span-3 px-4">
-        <h1 className="text-4xl font-bold mb-4">Product Listing</h1>
+      <div className="col-span-full md:col-span-2 lg:col-span-3 px-4">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">Product Listing</h1>
         {filteredProduct.length === 0 && (
-                <p className="text-neutral-800 text-center py-8">No Product Found</p>
-              )}
+          <p className="text-neutral-800 text-center py-8">No Product Found</p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredProduct.map((product, index) => (
-                 <div key={product.id} className="p-4 cursor-pointer">
-                  <div onClick={() => handleProductClick(product.id)}>
-                  <Image src={product.image} height={600} width={600} alt={product.title} className="w-30 h-40 object-contain mb-2" />
-                  <h3 className="text-base font-semibold mb-1 h-12 max-w-60 overflow-hidden">{product.title}</h3>
-                  <p className="text-base font-bold mt-2 mb-2">
-                    ${product.price.toFixed(2)}
-                  </p>
-                  </div>
-                  {product.addedToCart ? (<button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background cursor-pointer"  onClick={() => router.push('/cart')}>
-                      <p className="flex items-center gap-2">
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Go To Cart</span>
-                    </p>
-                  </button>) : (<button className="px-8 py-2 bg-secondary-background rounded-[10px] text-background cursor-pointer" onClick={() => handleAddToCart(product)}>
-                  <span>
-                    Add to Cart
-                  </span>
+          {filteredProduct.map((product, index) => (
+            <div key={product.id} className="p-4 cursor-pointer">
+              <div onClick={() => handleProductClick(product)}>
+                <Image src={product.image} height={600} width={600} alt={product.title} className="w-full h-40 object-contain mb-2" />
+                <h3 className="text-base font-semibold mb-1 h-12 max-w-full overflow-hidden">{product.title}</h3>
+                <p className="text-base font-bold mt-2 mb-2">
+                  ${product.price.toFixed(2)}
+                </p>
+              </div>
+              {product.addedToCart ? (<button className="px-8 py-2 bg-primary rounded-[10px] text-background w-full cursor-pointer hover:bg-primary/90" onClick={() => router.push('/cart')}>
+                <p className="flex justify-center items-center gap-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Go To Cart</span>
+                </p>
+              </button>) : (<button className="px-8 py-2 bg-primary w-full rounded-[10px] text-background cursor-pointer hover:bg-primary/90" onClick={() => handleAddToCart(product)}>
+                <span>
+                  Add to Cart
+                </span>
               </button>)}
-               </div>
-              ))}
+            </div>
+          ))}
         </div>
       </div>
     </main>
   );
-}
-
-
-function RadioOptionComponent({
-  category,
-  className,
-  isCategoryCard,
-  selectedCategory,
-  handleFilterChange
-}: {
-  category: CategoryItem;
-  className : string;
-  isCategoryCard : boolean
-  selectedCategory : FilterItemsType
-  handleFilterChange : (filterType : 'category' | 'minPrice' | 'maxPrice', value : string) => void
-}) {
-  return (
-    <div key={category.value} className="flex items-center">
-            <div className="relative">
-              <input
-                type="radio"
-                id={category.value}
-                name="category"
-                value={category.value}
-                checked={selectedCategory === category.value}
-                onChange={(e) => handleFilterChange("category", e.target.value)}
-                className="sr-only"
-              />
-              <label htmlFor={category.value} className="flex items-center cursor-pointer">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                    selectedCategory === category.value
-                      ? isCategoryCard ? "bg-white border-white" : "bg-blue-600 border-blue-600" 
-                      : "bg-transparent border-neutral-300 hover:border-neutral-400"
-                  }`}
-                >
-                  {selectedCategory === category.value && <div className={`w-2 h-2 ${className} rounded-full`}></div>}
-                </div>
-                <span className="ml-2 text-sm font-medium">{category.label}</span>
-              </label>
-            </div>
-          </div>
-  )
 }

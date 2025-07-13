@@ -13,13 +13,12 @@ interface ProductContextType {
     setSearchTerm : Dispatch<SetStateAction<string>>
     loading : boolean
     setLoading : Dispatch<SetStateAction<boolean>>
+    selectedProduct : ProductType | null;
+    setSelectedProduct : Dispatch<SetStateAction<ProductType | null>>
 }
 
 
 const ProductContext = createContext<ProductContextType | null>(null)
-
-
-
 
 
 
@@ -33,6 +32,7 @@ export function ProductContextProvider({
     const [products, setProducts] = useState<ProductType[]>([])
     const [cart, setCart] = useState<CartItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('')
+    const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null)
     const [loading, setLoading] = useState(false)
 
     console.log("does product have addedToCart ", products);
@@ -65,8 +65,12 @@ export function ProductContextProvider({
         }
     }
     const fetchData = async() => {
+        const localSelectedProduct = localStorage.getItem("selectedProduct");
+        if(localSelectedProduct){
+            const parsedSelectedProduct = JSON.parse(localSelectedProduct);
+            setSelectedProduct(parsedSelectedProduct)
+        }
         setLoading(true)
-       
         // console.log("localstorage cart is ",localCart)
         const response = await fetch('https://fakestoreapi.com/products');
         const data:ProductType[] = await response.json();
@@ -83,7 +87,7 @@ export function ProductContextProvider({
     }, [])
 
     return (
-        <ProductContext.Provider value={{products, setProducts, cart, setCart, searchTerm, setSearchTerm, loading, setLoading}}>
+        <ProductContext.Provider value={{products, setProducts, cart, setCart, searchTerm, setSearchTerm, loading, setLoading, selectedProduct, setSelectedProduct}}>
             {children}
         </ProductContext.Provider>
     )

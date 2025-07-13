@@ -17,15 +17,15 @@
 ### Main Section:
 #### Sidebar (left):
 
-[x] Category filter (checkboxes or pills)
+[X] Category filter (checkboxes or pills)
 
-[ ] Price range slider
+[X] Price range slider
 
 [X] Brand filter (optional)
 
 
 ### Product Grid (right):
-[/] Responsive grid: 3 columns on desktop, 2 on tablet, 1 on mobile
+[X] Responsive grid: 3 columns on desktop, 2 on tablet, 1 on mobile
 
 [X] Each product card includes:
     
@@ -58,7 +58,7 @@
 
 [X] Category
 
-[ ] Quantity selector
+[X] Quantity selector
 
 [X] "Add to Cart" button
 
