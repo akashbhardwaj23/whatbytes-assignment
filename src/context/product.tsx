@@ -47,6 +47,14 @@ export function ProductContextProvider({
         // console.log("localstorage cart is ",localCart)
         const response = await fetch('https://fakestoreapi.com/products');
         const data:ProductType[] = await response.json();
+        data.forEach((item) => {
+            if(item.category === "men's clothing" || item.category === "women's clothing"){
+                item.category = "clothing"
+            } else if(item.category === "jewelery"){
+                item.category = "home"
+            }
+        })
+
         // console.log("cart on context is ", cart)
         const localCart = localStorage.getItem("cart");
         if (localCart) {
@@ -55,7 +63,6 @@ export function ProductContextProvider({
             setCart(newCart)
             console.log("cart is ", cart)
             if(newCart.length > 0){
-
                 const cartLookup = new Map();
                 newCart.forEach((cartItem) => {
                     cartLookup.set(cartItem.id, cartItem);
@@ -63,11 +70,6 @@ export function ProductContextProvider({
                 data.forEach((item) => {
                     const newItem = cartLookup.get(item.id)
                     item.addedToCart = !!newItem
-                    if(item.category === "men's clothing" || item.category === "women's clothing"){
-                        item.category = "clothing"
-                    } else if(item.category === "jewelery"){
-                        item.category = "home"
-                    }
                 })
 
                 console.log("the data is ", data)
