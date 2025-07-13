@@ -37,7 +37,17 @@ export function ProductContextProvider({
 
     console.log("does product have addedToCart ", products);
 
-    const handleAddToCart = (data: ProductType[]) => {
+    const fetchData = async() => {
+        const localSelectedProduct = localStorage.getItem("selectedProduct");
+        if(localSelectedProduct){
+            const parsedSelectedProduct = JSON.parse(localSelectedProduct);
+            setSelectedProduct(parsedSelectedProduct)
+        }
+        setLoading(true)
+        // console.log("localstorage cart is ",localCart)
+        const response = await fetch('https://fakestoreapi.com/products');
+        const data:ProductType[] = await response.json();
+        // console.log("cart on context is ", cart)
         const localCart = localStorage.getItem("cart");
         if (localCart) {
             const newCart: CartItem[] = JSON.parse(localCart);
@@ -63,19 +73,6 @@ export function ProductContextProvider({
                 console.log("the data is ", data)
             }
         }
-    }
-    const fetchData = async() => {
-        const localSelectedProduct = localStorage.getItem("selectedProduct");
-        if(localSelectedProduct){
-            const parsedSelectedProduct = JSON.parse(localSelectedProduct);
-            setSelectedProduct(parsedSelectedProduct)
-        }
-        setLoading(true)
-        // console.log("localstorage cart is ",localCart)
-        const response = await fetch('https://fakestoreapi.com/products');
-        const data:ProductType[] = await response.json();
-        // console.log("cart on context is ", cart)
-        handleAddToCart(data)
 
         console.log("data is ", data)
         setLoading(false)
