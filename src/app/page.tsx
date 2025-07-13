@@ -15,6 +15,7 @@ export default function Home() {
   const { products, loading, searchTerm, cart, setCart, setProducts, setSelectedProduct } = useProductContext()
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(5000);
+  const [maxPriceValue, setMaxPriceValue] = useState(5000)
   const router = useRouter()
 
   useEffect(() => {
@@ -133,7 +134,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col justify-center gap-2">
             <h2 className="text-base font-semibold">Price</h2>
-            <input type="number" min={200} defaultValue={1000} className="border border-neutral-400/80 px-2 py-1 w-40 rounded-[10px]" />
+            <input type="number" min={200} defaultValue={maxPriceValue} step={100} className="border border-neutral-400/80 px-2 py-1 w-40 rounded-[10px]" onChange={(e) => setMaxPriceValue(Number(e.target.value))} />
           </div>
         </div>
       </div>
